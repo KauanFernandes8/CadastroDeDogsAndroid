@@ -93,7 +93,36 @@ public class ActivityCadastro extends AppCompatActivity
     }
 
     private void ConsultarDogNome()
-    {}
+    {
+        String strNome = edtNome.getText().toString();
+        Service service = RetrofitConfig.getRetrofitInstance().create(Service.class);
+        Call<Dog> call = service.selecionarNome(strNome);
+        call.enqueue(new Callback<Dog>()
+        {
+            @Override
+            public void onResponse(Call<Dog> call, Response<Dog> response)
+            {
+                if(response.isSuccessful())
+                {
+                    Dog dogRespostaNode = response.body();
+
+                    edtId.setText(dogRespostaNode.getId().toString());
+                    edtNome.setText(dogRespostaNode.getNome().toString());
+                    edtRaca.setText(dogRespostaNode.getRaca().toString());
+                    edtImagem.setText(dogRespostaNode.getImagem().toString());
+                }
+
+                else
+                    Toast.makeText(ActivityCadastro.this, "Erro na consulta de nome", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<Dog> call, Throwable t)
+            {
+                Toast.makeText(ActivityCadastro.this, "Ocorreu erro de requisição no Node: " + t.toString(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
 
     private void IncluirDog()
     {
@@ -143,17 +172,109 @@ public class ActivityCadastro extends AppCompatActivity
             @Override
             public void onFailure(Call<Dog> call, Throwable t)
             {
-                Toast.makeText(ActivityCadastro.this, "Erro com a conexão no Node" + t.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(ActivityCadastro.this, "Erro de conexão com o Node" + t.toString(), Toast.LENGTH_LONG).show();
             }
         });
     }
 
     private void AlterarDog()
-    {}
+    {
+        String strId = edtId.getText().toString();
+        String strNome = edtNome.getText().toString();
+        String strRaca = edtRaca.getText().toString();
+        String strImagem = edtImagem.getText().toString();
+
+        Dog dog = new Dog(strId, strNome, strRaca, strImagem);
+        Service service = RetrofitConfig.getRetrofitInstance().create(Service.class);
+        Call<Dog> call = service.alterarDog(strId, dog);
+        call.enqueue(new Callback<Dog>()
+        {
+            @Override
+            public void onResponse(Call<Dog> call, Response<Dog> response)
+            {
+                if(response.isSuccessful()){
+                    Dog dogRespostaNode = response.body();
+                    dogRespostaNode.getId().toString();
+                    dogRespostaNode.getNome().toString();
+                    dogRespostaNode.getRaca().toString();
+                    dogRespostaNode.getImagem().toString();
+
+                    Gson gson = new GsonBuilder().create();
+                    String jsonRespostaNode = gson.toJson(dogRespostaNode);
+
+                    TextView tvJson = findViewById(R.id.tvJson);
+                    tvJson.setText(jsonRespostaNode);
+
+                    TextView tvObjeto = findViewById(R.id.tvObjeto);
+                    tvObjeto.setText("");
+                    tvObjeto.append(dogRespostaNode.getId().toString() + "\n");
+                    tvObjeto.append(dogRespostaNode.getNome().toString() + "\n");
+                    tvObjeto.append(dogRespostaNode.getRaca().toString() + "\n");
+                    tvObjeto.append(dogRespostaNode.getImagem().toString());
+                }
+
+                else
+                {
+                    Toast.makeText(ActivityCadastro.this, "Erro na inclusão", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Dog> call, Throwable t)
+            {
+                Toast.makeText(ActivityCadastro.this, "Ocorreu erro de requisição no Node: " + t.toString(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
 
     private void ExcluirDog()
     {
-        Limpar();
+        String strId = findViewById(R.id.edtId).toString();
+
+        Service service = RetrofitConfig.getRetrofitInstance().create(Service.class);
+        Call<Dog> call = service.excluirDog(strId);
+
+        call.enqueue(new Callback<Dog>()
+        {
+            @Override
+            public void onResponse(Call<Dog> call, Response<Dog> response)
+            {
+                if(response.isSuccessful())
+                {
+                    Dog dogRespostaNode = response.body();
+
+                    dogRespostaNode.getId().toString();
+                    dogRespostaNode.getNome().toString();
+                    dogRespostaNode.getRaca().toString();
+                    dogRespostaNode.getImagem().toString();
+
+                    Gson gson = new GsonBuilder().create();
+
+                    String json = gson.toJson(dogRespostaNode);
+
+                    TextView tvJson = findViewById(R.id.tvJson);
+                    tvJson.setText(json);
+
+                    TextView tvObjeto = findViewById(R.id.tvObjeto);
+                    tvObjeto.setText("");
+                    tvObjeto.append(dogRespostaNode.getId().toString() + "\n");
+                    tvObjeto.append(dogRespostaNode.getNome().toString() + "\n");
+                    tvObjeto.append(dogRespostaNode.getRaca().toString() + "\n");
+                    tvObjeto.append(dogRespostaNode.getImagem().toString());
+                }
+
+                else
+                {
+                    Toast.makeText(ActivityCadastro.this, "Erro na exclusão", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Dog> call, Throwable t)
+            {
+                Toast.makeText(ActivityCadastro.this, "Ocorreu erro de requisição no Node: " + t.toString(), Toast.LENGTH_LONG).show();
+            }
+        });
 
     }
 }
