@@ -154,6 +154,6 @@ public class ActivityCadastro extends AppCompatActivity
     private void ExcluirDog()
     {
         Limpar();
-        
+
     }
 }
